@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const db = require('./db');  //create tables of database.//means db.js
+//const db = require('./db');  //create tables of database.//means db.js
 
 const userRegistrationController = require('./controllers/userRegistrationController');
 const userLoginController = require('./controllers/userLoginController');
