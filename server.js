@@ -14,7 +14,7 @@ const port = 3001;
 
 app.use(bodyParser.json());
 
-app.use(express.static('app/public'));
+app.use(express.static('public'));
 
 
 //

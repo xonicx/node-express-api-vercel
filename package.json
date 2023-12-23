@@ -2,7 +2,7 @@
   "name": "api-vercel",
   "version": "1.0.0",
   "description": "",
-  "main": "app/server.js",
+  "main": "server.js",
   "scripts": {
   },
   "keywords": [],
@@ -11,8 +11,5 @@
   "dependencies": {
     "express": "^4.18.2",
     "sqlite3": "^5.1.6"
-  },
-  "config": {
-    "prefix": "app/node_modules"
   }
 }
