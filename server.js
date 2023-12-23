@@ -18,10 +18,10 @@ app.use(express.static('public'));
 
 
 //
-app.use('/api/user-registration', userRegistrationController);
+//app.use('/api/user-registration', userRegistrationController);
 app.use('/api/user-login', userLoginController);
-app.use('/api/display-users', displayUsersController);   //also update
-app.use('/api/delete-users', displayUsersController);
+//app.use('/api/display-users', displayUsersController);   //also update
+//app.use('/api/delete-users', displayUsersController);
 //app.use('/api/display-users', displayUsersController);
 
 app.listen(port, () => {
