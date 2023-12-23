@@ -4,14 +4,15 @@
   "description": "",
   "main": "app/server.js",
   "scripts": {
-    "prep": "yarn install sqlite3"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "sdfsd": "^4.18.2",
     "sqlite3": "^5.1.6"
+  },
+  "config": {
+    "prefix": "app/node_modules"
   }
 }
