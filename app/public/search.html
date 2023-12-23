@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User List</title>
+</head>
+<body>
+  
+  <table>
+    <tr>
+      <td>
+        <h1>Search User</h1>
+        <form id="searchForm">
+          <label for="editUserId">User ID:</label>
+          <input type="text" id="editUserId" name="userid" required>
+          <label for="editPhone">Phone:</label>
+          <input type="text" id="editPhone" name="phone" required>
+          <button type="submit">Search User</button>
+        </form>
+      </td>
+    </tr>
+  </table>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Phone</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="userList"></tbody>
+  </table>
+  <script>
+
+async function search() {
+    const searchForm = document.getElementById('searchForm');
+      //const params = new URLSearchParams(window.location.search);
+      //const userId = params.get('id');
+
+      searchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const editUserId = document.getElementById('editUserId').value;
+        const editPhone = document.getElementById('editPhone').value;
+
+
+        const response = await fetch(`/api/display-users/search`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userid: editUserId, phone: editPhone }),
+        });
+
+
+        const users = await response.json();
+        console.log('users in search response', users);
+
+        if (response.ok) {
+          alert('User search successfully');
+
+          //alert(response.json());
+          //const { userid, phone, id } = response.body;
+          console.log(users.userid);
+          console.log(users.phone);
+          const userList = document.getElementById('userList');
+          userList.innerHTML = '';
+         // const usersArray = Object.values(users);
+         users.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${user.id}</td><td>${user.userid}</td><td>${user.phone}</td><td><button onclick="editUser(${user.id})">Edit</button></td>`;
+            userList.appendChild(row);
+          });
+
+
+          //window.location.href = '/displayUsers.html';
+        } else {
+          alert('Error search user');
+        }
+      });
+    }
+    search();
+    
+  </script>
+  <li><a href="home.html">Home </a></li>
+</body>
+</html>

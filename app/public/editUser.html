@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit User</title>
+</head>
+<body>
+  <h1>Edit User</h1>
+  <form id="editForm">
+    <label for="editUserId">User ID:</label>
+    <input type="text" id="editUserId" name="userid" required>
+    <label for="editPhone">Phone:</label>
+    <input type="text" id="editPhone" name="phone" required>
+    <button type="submit">Update User</button>
+  </form>
+  <script>
+    const editForm = document.getElementById('editForm');
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('id');
+
+    editForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const editUserId = document.getElementById('editUserId').value;
+      const editPhone = document.getElementById('editPhone').value;
+
+      const response = await fetch(`/api/display-users/update/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userid: editUserId, phone: editPhone }),
+      });
+
+      if (response.ok) {
+        alert('User updated successfully');
+        window.location.href = '/displayUsers.html';
+      } else {
+        alert('Error updating user');
+      }
+    });
+  </script>
+  <li><a href="home.html">Home </a></li>
+</body>
+</html>

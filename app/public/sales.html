@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simba Sales</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        .bx-prev {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            height: 10px;
+            width: 10px;
+            background: lime;
+
+        }
+
+        button:hover {
+            background-color: #4CAF50;
+            /* New color when hovered */
+            color: #fff;
+            /* Text color when hovered */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            /* Highlight effect */
+        }
+
+        /* Optional: Style for the button */
+        button {
+            padding: 5px 5px;
+            font-size: 10px;
+            border: none;
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+            /* Optional: Collapse border spacing */
+            border: 2px solid #3498db;
+            /* Border color */
+        }
+
+        /* Optional: Style for table cells */
+        td,
+        th {
+            border: 1px solid #ddd;
+            /* Cell border color */
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+    <script>
+        var balmicapath, shmicapath, shmicapath2;
+        var modeldata = '';
+
+    </script>
+</head>
+
+<body>
+    <div id="app">
+
+        <table class="fixed" width="1000px" border="1">
+
+            <tr>
+                <td colspan="3" bgcolor="gray" align="center">
+                    <div id="actionstatus" style="color: rgb(3, 83, 3); font-weight: bold;"> Find Customer: {{actionstatus}}
+                    </div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td> Name: <input id="userid_key" v-model="newUser.userid" type="text" size="10" />
+                    Phone: <input id="phone_key" v-model="newUser.phone" type="text" size="10" />
+                </td>
+
+                <td>
+                    <button @click="search('all')">findAll</button>
+                    <button @click="search('userid')">findByName</button>
+                    <button @click="search('phone')">findByPhone</button>
+                    <!-- <button @click="search('userlog')">Trace By Name</button>
+                    <button @click="search('userid')">Update By Name</button> -->
+                </td>
+            </tr>
+            <tr>
+                <td> 
+                    
+                </td>
+
+                <td>
+                  
+                    <button @click="setAddMode()">Add new customer</button>
+                   
+                    <button @click="search('todaytask')">Last/next Task</button>
+                    
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="4">
+                    <div>
+                        <table border="1" width="100%" bordercolor="blue" v-if="addmode  > 0  || editmode > 0">
+                            <thead>
+                                <th colspan="2" bgcolor="gray" align="center">
+                                    Customer Record
+                                </th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <label for="userid">Name</label>
+                                        <input id="userid" v-model="newUser.userid" type="text" size="15" />
+                                    </td>
+                                    <td>
+                                        <label for="phone">Phone</label>
+                                        <input id="phone" v-model="newUser.phone" type="text" size="15" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="address">address</label>
+                                        <input id="address" v-model="newUser.address" type="text" size="20" />
+                                    </td>
+                                    <td>
+                                        <label for="action">Action</label>
+                                        <select id="action" v-model="newUser.action" type="text" required>
+                                            <option v-for="(type, index) in actionlist" key="index">{{ type }}</option>
+                                        </select>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="purpose">purpose</label>
+                                        <select id="purpose" v-model="newUser.purpose" type="text" required>
+                                            <option v-for="(type, index) in purposelist" key="index">{{ type }}</option>
+                                        </select>
+
+                                    </td>
+                                    <td>
+                                        <label for="comment">comment</label>
+                                        <input id="comment" v-model="newUser.comment" type="text" size="50" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="nextAction">NextAction</label>
+                                        <select id="nextAction" v-model="newUser.nextAction" type="text" required>
+                                            <option v-for="(type, index) in actionlist" key="index">{{ type }}</option>
+                                        </select>
+
+                                    </td>
+                                    <td>
+                                        <label for="nextPurpose">NextPurpose</label>
+                                        <select id="nextPurpose" v-model="newUser.nextPurpose" type="text" required>
+                                            <option v-for="(type, index) in purposelist" key="index">{{ type }}</option>
+                                        </select>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td colspan="3">
+                                        <label for="reminderDays">ReminderDays</label>
+                                        <input id="reminderDays" v-model="newUser.reminderDays" type="text" size="10" />
+                                    </td>
+                                    <td>
+                                        <button type="button" @click="register" v-if="addmode > 0">Add Lead</button>
+                                        <button type="button" @click="updateUser" v-if="editmode > 0">Update
+                                            User</button>
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+
+            </tr>
+
+
+
+
+            <tr>
+                <td colspan="4" bgcolor="gray" align="center">
+                    <div id="searchstatus" style="color: rgb(13, 15, 133); font-weight: bold;"> <b>User List</b>
+                        {{searchstatus}}</div>
+                </td>
+
+            </tr>
+            <tr v-if="displaymode > 0">
+                <td colspan="2">
+                    <div>
+                        <table border="1" wdith="100%">
+                            <thead>
+
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>address</th>
+                                <th>Last action</th>
+                                <th>Last Purpose</th>
+                                <th>Comment</th>
+                                <th>NextAction</th>
+                                <th>NextPurpose</th>
+                                <th>Reminder days</th>
+                                <th>Remidarer Date</th>
+                                <th>createdON</th>
+                                <th>updatedON</th>
+                                <th>Add/Delete</th>
+
+
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in users" :key="index">
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.userid }}</td>
+                                    <td>{{ item.phone}}</td>
+                                    <td>{{ item.address }}</td>
+                                    <td>{{ item.action }}</td>
+                                    <td>{{ item.purpose}}</td>
+                                    <td>{{ item.comment }}</td>
+                                    <td>{{ item.nextAction }}</td>
+                                    <td>{{ item.nextPurpose}}</td>
+                                    <td>{{ item.reminderDays}}</td>
+                                    <td>{{ convertDate(item.reminderdate) }}</td>
+                                    <td>{{ convertDate(item.createdon) }}</td>
+                                    <td>{{ convertDate(item.updatedon) }}</td>
+
+                                    <td>
+                                        <button @click="setEditMode(item)">Edit</button>
+                                        <button @click="deleteUser(item)">Delete</button>
+                                        <button @click="traceUser(item)">Trace</button>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </td>
+            </tr>
+
+        </table>
+
+
+
+        <script>
+            new Vue({
+                el: "#app",
+                data: {
+
+                    searchstatus: '',
+                    actionstatus: 'Click on buttons to create/search a customer',
+                    editmode: 0,
+                    addmode: 0,
+                    displaymode: 0,
+                    actionlist: ["whatsapp", "email", "call", "sitevisit", "officevisit", "sendppt", "predesign", "sendquote", "sendrevisequote"],
+                    purposelist: ["requirement", "consulting", "measurement", "design_discussion", "negotiations", "booking"],
+                    stauslist: ["fresh", "warm", "hot", "dead", "booked", "notresponding", "notsuitable"],
+
+                    responseMessage: '',
+                    users: [],
+                    newUser: {
+                        logid: '',
+                        id: '',
+                        userid: '',
+                        phone: '',
+                        address: '',
+                        action: 'call',
+                        purpose: 'requirement',
+                        comment: 'urgent req one week',
+                        nextAction: 'sitevisit',
+                        nextPurpose: 'measurement',
+                        reminderDays: 3,
+                        reminderdate: '',
+                        createdon: '',
+                        updatedon: '',
+                    },
+
+                },
+
+
+                computed: {
+                },
+                mounted() {
+                    //this.login();
+                },
+                methods: {
+                    convertDate(str) {
+                        // Split the input datetime string into date and time parts
+                        if(!str) return;
+                        const datepart = str.split(',');
+                        const [day, month, year] = datepart[0].trim().split('/');
+                        const inputDate = new Date( year, month - 1, day);
+
+                        // Format the date into "DD MMM YYYY" format
+                        const options = { day: 'numeric', month: 'short',year: 'numeric'};
+                        const outputDateString = inputDate.toLocaleDateString('en-GB', options);
+
+                        return outputDateString;
+                    },
+
+                    clear() {
+                        //this.newUser = {};
+                        // this.users = [];
+                        this.addmode = 0;
+                        this.editmode = 0;
+
+                    },
+                    setAddMode() {
+                        
+                        this.addmode = 1;
+                        this.editmode = 0;
+                    },
+                    setEditMode(user) {
+                        this.editmode = 1;
+                        this.addmode = 0;
+                        this.newUser = user;
+                    },
+
+                    showDetails(user) {
+                        this.newUser = user;
+                        this.search('userid');
+                        this.editmode = 0;
+                        this.addmode = 0;
+                        this.displaymode = 1;
+
+                    },
+                    traceUser (user) {
+                        this.newUser = user;
+                        //alert(this.newUser.id + ""+ this.newUser.userid);
+                        this.search('userlog');
+                        this.editmode = 0;
+                        this.addmode = 0;
+                        this.displaymode = 1;
+                    },
+                    register() {
+
+                        
+                        console.log("Create User  called");
+                        fetch('/api/user-registration/register', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.newUser),
+                        })
+                            .then(response => response.text())
+                            .then(data => {
+                                // Handle the response from the backend
+                               // this.users = data;
+                                this.responseMessage = data;
+                                if (data)
+                                    this.actionstatus = "New Customer Added: " + this.newUser.userid;
+                                // alert('Registration successful', this.responseMessage);
+                                //window.location.href = '/displayUsers.html';
+                            })
+                            .catch(error => {
+                                alert('Invalid Data');
+                                console.error('Error:', error);
+                                if (this.newUser)
+                                    this.actionstatus = "Customer creation failed for : " + this.newUser.userid;
+                                this.responseMessage = 'An error occurred during registration.';
+                            });
+
+                        //this.clear();
+                        //alert(this.users.length);
+                       this.search('userid');
+                        this.editmode = 0;
+                        this.addmode = 0;
+                        this.displaymode = 1;
+
+                    },
+
+                    search(key) {
+                        //alert(key);
+                        //this.users =[];
+                        //this.newUser = {};
+                        console.log("Search called by ", key);
+                       
+                        fetch('/api/display-users/search/' + key, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.newUser),
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+
+                                // Handle the response from the backend
+                                //alert(data);
+                                this.users = data;
+                                // this.displayUsers();
+                                this.responseMessage = data;
+                                this.searchstatus = "Users found: " + this.users.length;
+                                //alert('User found ', this.responseMessage);
+                                // window.location.href = '/displayUsers.html';
+                            })
+                            .catch(error => {
+                               // alert('Invalid Data');
+                                this.searchstatus = "Error in searching...";
+                                console.error('Error:', error);
+                                this.responseMessage = 'An error occurred during registration.';
+                            });
+
+                       
+                        this.clear();
+                        this.displaymode = 1;
+
+                    },
+
+
+
+                    updateUser() {
+
+
+                        console.log("Updating user called", this.newUser);
+                        fetch('/api/display-users/update/' + this.newUser.id, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.newUser),
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log('status:', response.text());
+                                    if (this.newUser)
+                                        this.actionstatus = "Customer Record Updated for: " + this.newUser.userid;
+                                }
+
+                            })
+                            .then(data => {
+
+
+                                this.responseMessage = data;
+                                console.log('status:', this.responseMessage);
+
+                            })
+                            .catch(error => {
+                                alert('Invalid Data');
+                                console.error('Error:', error);
+                                this.actionstatus = "Error in Customer Record  Update for: " + this.newUser.userid;
+                                this.responseMessage = 'An error occurred during updating user.';
+                            });
+
+                        this.search('all');
+
+                        this.editmode = 0;
+                        this.addmode = 0;
+                        this.displaymode = 1;
+
+
+                    },
+                    deleteUser(user) {
+                        //alert(key);
+                        key = user.id;
+                        console.log("Search called");
+                        fetch('/api/delete-users/delete/' + key, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.newUser),
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log('status:', response.text());
+                                    if (this.newUser)
+                                        this.actionstatus = "Customer Deleted " + this.newUser.userid;
+                                }
+
+                            })
+                            .then(data => {
+
+                                // Handle the response from the backend
+                                this.users = [];
+                                // this.displayUsers();
+                                this.responseMessage = data;
+                                if (this.responseMessage)
+                                    console.error('status:', this.responseMessage);
+                                //alert('status: ', this.responseMessage);
+                                // window.location.href = '/displayUsers.html';
+                            })
+                            .catch(error => {
+                                //alert('Invalid Data');
+                                console.error('Error:', error);
+                                if (this.newUser)
+                                    this.actionstatus = "Error in Customer Deletion for " + this.newUser.userid;
+                                this.responseMessage = 'An error occurred during deleting users.';
+                            });
+
+                        this.search('all');
+                        this.displaymode = 1;
+                        this.editmode = 0;
+                        this.addmode = 0;
+
+
+
+
+                    },
+
+
+
+                },
+
+            });
+        </script>
+        <li><a href="home.html">Home </a></li>
+</body>
+
+</html>

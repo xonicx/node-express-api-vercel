@@ -1,0 +1,38 @@
+.bx-prev {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 10px;
+    width: 10px;
+    background: lime;
+
+}
+
+button:hover {
+background-color: #4CAF50; /* New color when hovered */
+color: #fff; /* Text color when hovered */
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Highlight effect */
+}
+
+/* Optional: Style for the button */
+button {
+padding: 5px 5px;
+font-size: 10px;
+border: none;
+cursor: pointer;
+background-color: #3498db;
+color: #fff;
+border-radius: 5px;
+}
+
+table {
+border-collapse: collapse; /* Optional: Collapse border spacing */
+border: 2px solid #3498db; /* Border color */
+}
+
+/* Optional: Style for table cells */
+td, th {
+border: 1px solid #ddd; /* Cell border color */
+padding: 8px;
+text-align: left;
+}

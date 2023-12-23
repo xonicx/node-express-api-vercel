@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User List</title>
+</head>
+<body>
+  <h1>User List</h1>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Phone</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="userList"></tbody>
+  </table>
+  <script>
+    async function fetchUsers() {
+      const response = await fetch('/api/display-users/users');
+      const users = await response.json();
+      const userList = document.getElementById('userList');
+      userList.innerHTML = '';
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${user.id}</td><td>${user.userid}</td><td>${user.phone}</td><td><button onclick="editUser(${user.id})">Edit</button></td>`;
+        userList.appendChild(row);
+      });
+    }
+
+    function editUser(userId) {
+      window.location.href = `/editUser.html?id=${userId}`;
+    }
+
+    fetchUsers();
+  </script>
+  <li><a href="home.html">Home </a></li>
+</body>
+</html>
