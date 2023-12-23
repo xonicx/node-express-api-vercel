@@ -4,7 +4,7 @@
   "description": "",
   "main": "app/server.js",
   "scripts": {
-    "prep": "npm install sqlite3"
+    "prep": "yarn add sqlite3"
   },
   "keywords": [],
   "author": "",
