@@ -7,6 +7,7 @@ const { google } = require('googleapis');
 const { OAuth2Client } = require('google-auth-library');
 const streamifier = require('streamifier');
 const { drive } = require('googleapis/build/src/apis/drive');
+const { sql } = require("@vercel/postgres");
 
 
 const app = express();
@@ -16,7 +17,7 @@ app.use(cors());
 
 // Set up multer for handling file uploads
 //const upload = multer({ storage: multer.memoryStorage() });  // Use memory storage to handle file buffers
-const upload = multer(); 
+const upload = multer();
 
 
 // Replace with your own client ID and client secret
@@ -34,7 +35,7 @@ const setAccessToken = (accessToken) => {
 
 // Function to check and create a folder
 const checkAndCreateFolder = async (folderName, drive) => {
-  console.log("checkAndCreateFolder: finding Id for folder: ",folderName );
+  console.log("checkAndCreateFolder: finding Id for folder: ", folderName);
   try {
     // Check if the folder exists
     const folderQueryResponse = await drive.files.list({
@@ -56,7 +57,7 @@ const checkAndCreateFolder = async (folderName, drive) => {
 
       folderId = folderCreationResponse.data.id;
     } else {
-      console.log("checkAndCreateFolder: found folder : ",folderQueryResponse.data.files );
+      console.log("checkAndCreateFolder: found folder : ", folderQueryResponse.data.files);
       // Folder already exists, use its ID
       folderId = folderQueryResponse.data.files[0].id;
     }
@@ -163,7 +164,7 @@ app.post('/upload-to-drive', upload.single('file'), async (req, res) => {
 
     console.log("rootfolderId:", rootfolderId);
 
-    const fileId = await uploadOrUpdateFile(rootfolderId,file, drive);
+    const fileId = await uploadOrUpdateFile(rootfolderId, file, drive);
     console.log("fileId:", fileId);
 
     // Respond with success
@@ -281,7 +282,7 @@ app.post('/update-sheet', async (req, res) => {
     const values = response.data.values;
 
     // Find the index of the row with the specified search value in the first column
-    const rowIndex = values? values.findIndex(row => row[0] === prName): -1;
+    const rowIndex = values ? values.findIndex(row => row[0] === prName) : -1;
 
     if (rowIndex !== -1) {
       console.log("update-sheet: updating project:", prName, "data:", data);
@@ -312,6 +313,8 @@ app.post('/update-sheet', async (req, res) => {
 
 app.get('/list-projects', async (req, res) => {
   try {
+    await this.createTable();
+    await this.writeData();
     // Set the access token for authentication
     const accessToken = req.headers.authorization.split(' ')[1];
     setAccessToken(accessToken);
@@ -342,6 +345,65 @@ app.get('/list-projects', async (req, res) => {
   }
 });
 
+
+async function createTable() {
+ 
+  try {
+    // Define the table schema
+    const createTableQuery = `
+      CREATE TABLE IF NOT EXISTS your_table (
+        id SERIAL PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL,
+        item_name VARCHAR(255) NOT NULL,
+        quantity INTEGER NOT NULL
+      );
+    `;
+
+    // Execute the query to create the table
+    await sql.query(createTableQuery);
+
+    console.log('Table created successfully');
+
+    return 'Table created successfully';
+  } catch (error) {
+    console.error('Error creating table:', error);
+
+    return 'Error creating table';
+  } finally {
+    // Close the database connection
+    await sql.end();
+  }
+}
+
+// This is an example function that writes data to the database
+async function writeData() {
+  // Connect to the database
+
+  try {
+    // Example data to be inserted
+    const sampleData = {
+      user_id: 'sample_user',
+      item_name: 'Sample Item',
+      quantity: 10,
+    };
+
+    // Insert data into the database
+    const result = await client.query(
+      sql`INSERT INTO your_table (user_id, item_name, quantity) VALUES (${sampleData.user_id}, ${sampleData.item_name}, ${sampleData.quantity})`
+    );
+
+    console.log('Data inserted successfully:', result);
+
+    return 'Data inserted successfully';
+  } catch (error) {
+    console.error('Error inserting data:', error);
+
+    return 'Error inserting data';
+  } finally {
+    // Close the database connection
+    await client.end();
+  }
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
