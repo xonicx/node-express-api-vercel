@@ -372,7 +372,7 @@ async function createTable() {
     return 'Error creating table';
   } finally {
     // Close the database connection
-    await sql.end();
+    //await sql.end();
   }
 }
 
@@ -402,7 +402,7 @@ async function writeData() {
     return 'Error inserting data';
   } finally {
     // Close the database connection
-    await sql.end();
+    //await sql.end();
   }
 }
 
@@ -410,7 +410,7 @@ async function readData() {
 
   try {
     // Select all rows from the table
-    const result = await client.query(sql`SELECT * FROM your_table`);
+    const result = await sql.query(sql`SELECT * FROM your_table`);
     const rows = result.rows;
 
     console.log('Data read successfully:', rows);
@@ -422,7 +422,7 @@ async function readData() {
     return 'Error reading data';
   } finally {
     // Close the database connection
-    await client.end();
+    await sql.end();
   }
 }
 
