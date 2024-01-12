@@ -313,8 +313,9 @@ app.post('/update-sheet', async (req, res) => {
 
 app.get('/list-projects', async (req, res) => {
   try {
-    await this.createTable();
-    await this.writeData();
+    await createTable();
+    await writeData();
+    await readData();
     // Set the access token for authentication
     const accessToken = req.headers.authorization.split(' ')[1];
     setAccessToken(accessToken);
@@ -399,6 +400,26 @@ async function writeData() {
     console.error('Error inserting data:', error);
 
     return 'Error inserting data';
+  } finally {
+    // Close the database connection
+    await client.end();
+  }
+}
+
+async function readData() {
+
+  try {
+    // Select all rows from the table
+    const result = await client.query(sql`SELECT * FROM your_table`);
+    const rows = result.rows;
+
+    console.log('Data read successfully:', rows);
+
+    return rows;
+  } catch (error) {
+    console.error('Error reading data:', error);
+
+    return 'Error reading data';
   } finally {
     // Close the database connection
     await client.end();
