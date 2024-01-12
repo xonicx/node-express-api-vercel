@@ -389,7 +389,7 @@ async function writeData() {
     };
 
     // Insert data into the database
-    const result = await client.query(
+    const result = await sql.query(
       sql`INSERT INTO your_table (user_id, item_name, quantity) VALUES (${sampleData.user_id}, ${sampleData.item_name}, ${sampleData.quantity})`
     );
 
@@ -402,7 +402,7 @@ async function writeData() {
     return 'Error inserting data';
   } finally {
     // Close the database connection
-    await client.end();
+    await sql.end();
   }
 }
 
